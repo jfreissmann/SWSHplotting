@@ -1,5 +1,6 @@
 """Main plotting module."""
 
+import locale
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
@@ -9,6 +10,7 @@ def init_params(font_size=20, font_family='Carlito', pdf_padding=0.1,
                 pdf_bbox='tight', pdf_fonttype=42,
                 deact_warnings=True):
     """Initialize RC parameters for matplotlib plots."""
+    locale.setlocale(locale.LC_TIME, 'de_DE.UTF-8')
     mpl.rcParams['font.size'] = font_size
     mpl.rcParams['font.family'] = font_family
     mpl.rcParams['savefig.pad_inches'] = pdf_padding
