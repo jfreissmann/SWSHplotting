@@ -88,3 +88,47 @@ def create_multipage_pdf(file_name='plots.pdf', figs=None, dpi=300,
         flag = True
 
     return flag
+
+
+def monthlyBar(data, figsize=[12, 5.5], return_ax=False, **kwargs):
+    """Create bar chart of sum of monthly unit commitment."""
+    monSum = data.resample('M').sum()/1e3
+    monSum.rename(index=lambda x: x.strftime('%b'), inplace=True)
+
+    if 'colors' in kwargs:
+        colors = kwargs['colors']
+    else:
+        colors = list(znes_colors().values())
+
+    fig, ax = plt.subplots(figsize=figsize)
+
+    for i, col in enumerate(monSum.columns):
+        bottom = 0
+        if i < len(monSum.columns):
+            bottom_cols = monSum.columns[i:]
+            for bottom_col in bottom_cols:
+                bottom += monSum[bottom_col]
+
+        ax.bar(monSum.index, monSum[col], bottom=bottom, color=colors[-i])
+
+    ax.grid(linestyle='--', which='major', axis='y')
+
+    if 'ylabel' in kwargs:
+        ax.set_ylabel(kwargs['ylabel'])
+    else:
+        ax.set_ylabel('Gesamtwärmemenge in GWh')
+
+    if 'title' in kwargs:
+        ax.set_title(kwargs['title'])
+
+    if 'suptitle' in kwargs:
+        fig.suptitle(kwargs['suptitle'])
+
+    if 'labels' in kwargs:
+        labels = kwargs['labels']
+    else:
+        labels = monSum.columns.to_list()
+    ax.legend(labels=labels)
+
+    if return_ax:
+        return ax
