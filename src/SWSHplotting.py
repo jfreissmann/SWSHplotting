@@ -43,7 +43,10 @@ def znes_colors(n=None):
 
     # allow for a dict of n colors
     if n is not None:
-        return {k: colors[k] for k in list(colors)[:n]}
+        if n > len(colors):
+            raise IndexError('Number of requested colors is too big.')
+        else:
+            return {k: colors[k] for k in list(colors)[:n]}
     else:
         return colors
 
@@ -95,16 +98,19 @@ def monthlyBar(data, figsize=[12, 5.5], return_ax=False, **kwargs):
     monSum = data.resample('M').sum()/1e3
     monSum.rename(index=lambda x: x.strftime('%b'), inplace=True)
 
+    nr_cols = len(monSum.columns)
+
     if 'colors' in kwargs:
         colors = kwargs['colors']
     else:
-        colors = list(znes_colors().values())
+        colors = list(znes_colors(nr_cols).values())
 
     fig, ax = plt.subplots(figsize=figsize)
 
     for i, col in enumerate(monSum.columns):
+        i += 1
         bottom = 0
-        if i < len(monSum.columns):
+        if i < nr_cols:
             bottom_cols = monSum.columns[i:]
             for bottom_col in bottom_cols:
                 bottom += monSum[bottom_col]
