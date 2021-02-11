@@ -5,6 +5,16 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
 
+def init_params(font_size=20, font_family='Carlito', pdf_padding=0.1,
+                pdf_bbox='tight', pdf_fonttype=42):
+    """Initialize RC parameters for matplotlib plots."""
+    mpl.rcParams['font.size'] = font_size
+    mpl.rcParams['font.family'] = font_family
+    mpl.rcParams['savefig.pad_inches'] = pdf_padding
+    mpl.rcParams['savefig.bbox'] = pdf_bbox
+    plt.rcParams['pdf.fonttype'] = pdf_fonttype
+
+
 def znes_colors(n=None):
     """Return dict with ZNES colors.
 
