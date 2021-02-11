@@ -18,5 +18,6 @@ setup(
         ],
     py_modules=['SWSHplotting'],
     package_dir={'': 'src'},
+    python_requires='>=3.6',
     install_requires=['matplotlib>=3.1.0']
 )
