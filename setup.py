@@ -17,5 +17,6 @@ setup(
         'License :: OSI Approved :: MIT License'
         ],
     py_modules=['SWSHplotting'],
-    package_dir={'': 'src'}
+    package_dir={'': 'src'},
+    install_requires=['matplotlib>=3.1.0']
 )
