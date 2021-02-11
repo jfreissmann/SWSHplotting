@@ -95,7 +95,8 @@ def create_multipage_pdf(file_name='plots.pdf', figs=None, dpi=300,
     return flag
 
 
-def monthlyBar(data, figsize=[12, 5.5], return_ax=False, **kwargs):
+def monthlyBar(data, figsize=[12, 5.5], legend_loc='best', return_ax=False,
+               **kwargs):
     """Create bar chart of sum of monthly unit commitment."""
     monSum = data.resample('M').sum()/1e3
     monSum.rename(index=lambda x: x.strftime('%b'), inplace=True)
@@ -103,21 +104,25 @@ def monthlyBar(data, figsize=[12, 5.5], return_ax=False, **kwargs):
     nr_cols = len(monSum.columns)
 
     if 'colors' in kwargs:
-        colors = kwargs['colors']
+        colors = kwargs['colors'][::-1]
     else:
-        colors = list(znes_colors(nr_cols).values())
+        colors = list(znes_colors(nr_cols).values())[::-1]
 
     fig, ax = plt.subplots(figsize=figsize)
 
-    for i, col in enumerate(monSum.columns):
-        i += 1
-        bottom = 0
-        if i < nr_cols:
-            bottom_cols = monSum.columns[i:]
-            for bottom_col in bottom_cols:
-                bottom += monSum[bottom_col]
+    pos_bottom = 0
+    neg_bottom = 0
 
-        ax.bar(monSum.index, monSum[col], bottom=bottom, color=colors[-i])
+    for col in monSum.columns:
+        mean_val = monSum[col].mean()
+        if mean_val > 0:
+            ax.bar(monSum.index, monSum[col],
+                   bottom=pos_bottom, color=colors.pop())
+            pos_bottom += monSum[col]
+        elif mean_val < 0:
+            ax.bar(monSum.index, monSum[col],
+                   bottom=neg_bottom, color=colors.pop())
+            neg_bottom += monSum[col]
 
     ax.grid(linestyle='--', which='major', axis='y')
 
@@ -136,7 +141,7 @@ def monthlyBar(data, figsize=[12, 5.5], return_ax=False, **kwargs):
         labels = kwargs['labels']
     else:
         labels = monSum.columns.to_list()
-    ax.legend(labels=labels)
+    ax.legend(labels=labels, loc=legend_loc)
 
     if return_ax:
         return ax
