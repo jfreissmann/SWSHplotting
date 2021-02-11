@@ -131,6 +131,9 @@ def monthlyBar(data, figsize=[12, 5.5], legend_loc='best', return_ax=False,
     else:
         ax.set_ylabel('Gesamtwärmemenge in GWh')
 
+    if 'xlabel' in kwargs:
+        ax.set_xlabel(kwargs['xlabel'])
+
     if 'title' in kwargs:
         ax.set_title(kwargs['title'])
 
