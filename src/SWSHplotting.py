@@ -145,7 +145,17 @@ def monthlyBar(data, figsize=[12, 5.5], legend_loc='best', return_objs=False,
         labels = kwargs['labels']
     else:
         labels = monSum.columns.to_list()
-    ax.legend(labels=labels, loc=legend_loc)
+    if legend_loc[:7] == 'outside':
+        if legend_loc[8:] == 'right':
+            ax.legend(labels=labels, loc='upper right',
+                      bbox_to_anchor=(1.25, 1),
+                      ncol=1)
+        elif legend_loc[8:] == 'bottom':
+            ax.legend(labels=labels, loc='lower left',
+                      bbox_to_anchor=(0, -0.265),
+                      ncol=nr_cols)
+    else:
+        ax.legend(labels=labels, loc=legend_loc)
 
     if return_objs:
         return fig, ax
