@@ -6,11 +6,12 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
 
-def init_params(font_size=20, font_family='Carlito', pdf_padding=0.1,
-                pdf_bbox='tight', pdf_fonttype=42,
+def init_params(german_labels=True, font_size=20, font_family='Carlito',
+                pdf_padding=0.1, pdf_bbox='tight', pdf_fonttype=42,
                 deact_warnings=True):
     """Initialize RC parameters for matplotlib plots."""
-    locale.setlocale(locale.LC_TIME, 'de_DE.UTF-8')
+    if german_labels:
+        locale.setlocale(locale.LC_TIME, 'de_DE.UTF-8')
     mpl.rcParams['font.size'] = font_size
     mpl.rcParams['font.family'] = font_family
     mpl.rcParams['savefig.pad_inches'] = pdf_padding
@@ -95,7 +96,7 @@ def create_multipage_pdf(file_name='plots.pdf', figs=None, dpi=300,
     return flag
 
 
-def monthlyBar(data, figsize=[12, 5.5], legend_loc='best', return_ax=False,
+def monthlyBar(data, figsize=[12, 5.5], legend_loc='best', return_objs=False,
                **kwargs):
     """Create bar chart of sum of monthly unit commitment."""
     monSum = data.resample('M').sum()/1e3
@@ -146,5 +147,5 @@ def monthlyBar(data, figsize=[12, 5.5], legend_loc='best', return_ax=False,
         labels = monSum.columns.to_list()
     ax.legend(labels=labels, loc=legend_loc)
 
-    if return_ax:
-        return ax
+    if return_objs:
+        return fig, ax
