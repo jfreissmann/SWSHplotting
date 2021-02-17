@@ -159,3 +159,63 @@ def monthlyBar(data, figsize=[12, 5.5], legend_loc='best', return_objs=False,
 
     if return_objs:
         return fig, ax
+
+
+def load_curve(data, figsize=[8, 5], linewidth=2.5, legend_loc='best', return_objs=False,
+               **kwargs):
+    """Plot the sorted (annual) load curves of units."""
+    data = data.apply(lambda x: x.sort_values(ascending=False).values)
+    data.reset_index(drop=True, inplace=True)
+
+    nr_cols = len(data.columns)
+
+    if 'colors' in kwargs:
+        colors = kwargs['colors']
+    else:
+        colors = list(znes_colors(nr_cols).values())
+
+    fig, ax = plt.subplots(figsize=figsize)
+
+    for col, color in zip(data.columns, colors):
+        ax.plot(data[col], linewidth=linewidth, color=color)
+
+    ax.grid(linestyle='--')
+
+    if 'ylabel' in kwargs:
+        ax.set_ylabel(kwargs['ylabel'])
+    else:
+        ax.set_ylabel(r'Wärmestrom $\dot{Q}$ in MW')
+
+    if 'xlabel' in kwargs:
+        ax.set_xlabel(kwargs['xlabel'])
+    else:
+        ax.set_xlabel('Stunden')
+
+    if 'title' in kwargs:
+        ax.set_title(kwargs['title'])
+
+    if 'suptitle' in kwargs:
+        fig.suptitle(kwargs['suptitle'])
+
+    if 'labels' in kwargs:
+        labels = kwargs['labels']
+    else:
+        labels = data.columns.to_list()
+    if legend_loc[:7] == 'outside':
+        if legend_loc[8:] == 'right':
+            ax.legend(labels=labels, loc='upper right',
+                      bbox_to_anchor=(1.33, 1),
+                      ncol=1)
+        elif legend_loc[8:] == 'bottom':
+            anchor = (0, -0.35)
+            if nr_cols > 4:
+                nr_cols = round(nr_cols/2)
+                anchor = (0, -0.45)
+            ax.legend(labels=labels, loc='lower left',
+                      bbox_to_anchor=anchor,
+                      ncol=nr_cols)
+    else:
+        ax.legend(labels=labels, loc=legend_loc)
+
+    if return_objs:
+        return fig, ax
