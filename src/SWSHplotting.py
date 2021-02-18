@@ -1,5 +1,6 @@
 """Main plotting module."""
 
+import math
 import locale
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -17,6 +18,7 @@ def init_params(german_labels=True, font_size=20, font_family='Carlito',
     mpl.rcParams['savefig.pad_inches'] = pdf_padding
     mpl.rcParams['savefig.bbox'] = pdf_bbox
     plt.rcParams['pdf.fonttype'] = pdf_fonttype
+    mpl.rcParams['hatch.linewidth'] = 2
 
     if deact_warnings:
         mpl.rcParams.update({'figure.max_open_warning': 0})
@@ -52,6 +54,46 @@ def znes_colors(n=None):
             return {k: colors[k] for k in list(colors)[:n]}
     else:
         return colors
+
+
+def znes_colors_hatched(n, diff_colors=4):
+    """Return list of dicts with ZNES colors with hatches."""
+    colors = list(znes_colors().values())
+    hatches = ['//', '\\\\', '////', '\\\\\\\\']
+
+    return_list = list()
+
+    for i in range(n):
+        if i < diff_colors:
+            return_list += [{'color': colors[i % diff_colors],
+                             'edgecolor': 'w'}]
+        else:
+            return_list += [{'color': colors[i % diff_colors],
+                             'hatch': hatches[((math.floor(i/diff_colors) - 1)
+                                               % 4)],
+                             'edgecolor': 'w'}]
+
+    return return_list
+
+
+def get_colors(nr_cols, **kwargs):
+    """Get color parameters list of dictionaries."""
+    color_params = list()
+    if 'colors' in kwargs:
+        for color in kwargs['colors']:
+            color_params += [{'color': color}]
+    elif 'hatches' in kwargs:
+        if 'diff_colors' in kwargs:
+            color_params = znes_colors_hatched(
+                nr_cols, diff_colors=kwargs['diff_colors'])
+        else:
+            color_params = znes_colors_hatched(nr_cols)
+    else:
+        colors = list(znes_colors(nr_cols).values())
+        for color in colors:
+            color_params += [{'color': color}]
+
+    return color_params
 
 
 def create_multipage_pdf(file_name='plots.pdf', figs=None, dpi=300,
@@ -104,25 +146,22 @@ def monthlyBar(data, figsize=[12, 5.5], legend_loc='best', return_objs=False,
 
     nr_cols = len(monSum.columns)
 
-    if 'colors' in kwargs:
-        colors = kwargs['colors'][::-1]
-    else:
-        colors = list(znes_colors(nr_cols).values())[::-1]
+    color_params = get_colors(nr_cols, **kwargs)
 
     fig, ax = plt.subplots(figsize=figsize)
 
     pos_bottom = 0
     neg_bottom = 0
 
-    for col in monSum.columns:
+    for col, color_param in zip(monSum.columns, color_params):
         mean_val = monSum[col].mean()
         if mean_val > 0:
             ax.bar(monSum.index, monSum[col],
-                   bottom=pos_bottom, color=colors.pop())
+                   bottom=pos_bottom, **color_param)
             pos_bottom += monSum[col]
         elif mean_val < 0:
             ax.bar(monSum.index, monSum[col],
-                   bottom=neg_bottom, color=colors.pop())
+                   bottom=neg_bottom, **color_param)
             neg_bottom += monSum[col]
 
     ax.grid(linestyle='--', which='major', axis='y')
@@ -169,15 +208,12 @@ def load_curve(data, figsize=[8, 5], linewidth=2.5, legend_loc='best', return_ob
 
     nr_cols = len(data.columns)
 
-    if 'colors' in kwargs:
-        colors = kwargs['colors']
-    else:
-        colors = list(znes_colors(nr_cols).values())
+    color_params = get_colors(nr_cols, **kwargs)
 
     fig, ax = plt.subplots(figsize=figsize)
 
-    for col, color in zip(data.columns, colors):
-        ax.plot(data[col], linewidth=linewidth, color=color)
+    for col, color_param in zip(data.columns, color_params):
+        ax.plot(data[col], linewidth=linewidth, **color_param)
 
     ax.grid(linestyle='--')
 
