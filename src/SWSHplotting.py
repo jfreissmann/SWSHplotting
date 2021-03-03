@@ -155,7 +155,7 @@ def monthlyBar(data, figsize=[12, 5.5], legend_loc='best', return_objs=False,
 
     for col, color_param in zip(monSum.columns, color_params):
         mean_val = monSum[col].mean()
-        if mean_val > 0:
+        if mean_val >= 0:
             ax.bar(monSum.index, monSum[col],
                    bottom=pos_bottom, **color_param)
             pos_bottom += monSum[col]
@@ -163,6 +163,13 @@ def monthlyBar(data, figsize=[12, 5.5], legend_loc='best', return_objs=False,
             ax.bar(monSum.index, monSum[col],
                    bottom=neg_bottom, **color_param)
             neg_bottom += monSum[col]
+
+    if 'demand' in kwargs:
+        monDemand = kwargs['demand'].resample('M').sum()/1e3
+        monDemand.rename(index=lambda x: x.strftime('%b'), inplace=True)
+        ax.bar(monSum.index, monDemand,
+               width=0.25, color=znes_colors()['orange'], alpha=0.75,
+               linewidth=0)
 
     ax.grid(linestyle='--', which='major', axis='y')
 
@@ -187,7 +194,7 @@ def monthlyBar(data, figsize=[12, 5.5], legend_loc='best', return_objs=False,
     if legend_loc[:7] == 'outside':
         if legend_loc[8:] == 'right':
             ax.legend(labels=labels, loc='upper right',
-                      bbox_to_anchor=(1.25, 1),
+                      bbox_to_anchor=(1.27, 1),
                       ncol=1)
         elif legend_loc[8:] == 'bottom':
             ax.legend(labels=labels, loc='lower left',
