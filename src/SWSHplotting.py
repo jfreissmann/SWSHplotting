@@ -168,7 +168,7 @@ def monthlyBar(data, figsize=[12, 5.5], legend_loc='best', return_objs=False,
         monDemand = kwargs['demand'].resample('M').sum()/1e3
         monDemand.rename(index=lambda x: x.strftime('%b'), inplace=True)
         ax.bar(monSum.index, monDemand,
-               width=0.25, color=znes_colors()['red'], alpha=0.75,
+               width=0.25, color=znes_colors()['lightgrey'], alpha=0.75,
                linewidth=0)
 
     ax.grid(linestyle='--', which='major', axis='y')
