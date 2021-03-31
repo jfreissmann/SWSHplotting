@@ -146,7 +146,10 @@ def monthlyBar(data, figsize=[12, 5.5], legend_loc='best', return_objs=False,
 
     nr_cols = len(monSum.columns)
 
-    color_params = get_colors(nr_cols, **kwargs)
+    if 'color_params' in kwargs:
+        color_params = kwargs['color_params']
+    else:
+        color_params = get_colors(nr_cols, **kwargs)
 
     fig, ax = plt.subplots(figsize=figsize)
 
