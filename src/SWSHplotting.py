@@ -138,8 +138,8 @@ def create_multipage_pdf(file_name='plots.pdf', figs=None, dpi=300,
     return flag
 
 
-def monthlyBar(data, figsize=[12, 5.5], legend_loc='best', return_objs=False,
-               **kwargs):
+def monthlyBar(data, figsize=[12, 5.5], legend_loc='best', legend=True,
+               return_objs=False, **kwargs):
     """Create bar chart of sum of monthly unit commitment."""
     monSum = data.resample('M').sum()/1e3
     monSum.rename(index=lambda x: x.strftime('%b'), inplace=True)
@@ -190,21 +190,22 @@ def monthlyBar(data, figsize=[12, 5.5], legend_loc='best', return_objs=False,
     if 'suptitle' in kwargs:
         fig.suptitle(kwargs['suptitle'])
 
-    if 'labels' in kwargs:
-        labels = kwargs['labels']
-    else:
-        labels = monSum.columns.to_list()
-    if legend_loc[:7] == 'outside':
-        if legend_loc[8:] == 'right':
-            ax.legend(labels=labels, loc='upper right',
-                      bbox_to_anchor=(1.27, 1),
-                      ncol=1)
-        elif legend_loc[8:] == 'bottom':
-            ax.legend(labels=labels, loc='lower left',
-                      bbox_to_anchor=(0, -0.265),
-                      ncol=nr_cols)
-    else:
-        ax.legend(labels=labels, loc=legend_loc)
+    if legend:
+        if 'labels' in kwargs:
+            labels = kwargs['labels']
+        else:
+            labels = monSum.columns.to_list()
+        if legend_loc[:7] == 'outside':
+            if legend_loc[8:] == 'right':
+                ax.legend(labels=labels, loc='upper right',
+                          bbox_to_anchor=(1.27, 1),
+                          ncol=1)
+            elif legend_loc[8:] == 'bottom':
+                ax.legend(labels=labels, loc='lower left',
+                          bbox_to_anchor=(0, -0.265),
+                          ncol=nr_cols)
+        else:
+            ax.legend(labels=labels, loc=legend_loc)
 
     if return_objs:
         return fig, ax
