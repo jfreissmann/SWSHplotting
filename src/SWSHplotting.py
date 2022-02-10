@@ -56,7 +56,7 @@ def znes_colors(n=None):
         return colors
 
 
-def znes_colors_hatched(n, diff_colors=4):
+def znes_colors_hatched_old(n, diff_colors=4):
     """Return list of dicts with ZNES colors with hatches."""
     colors = list(znes_colors().values())
     hatches = ['//', '\\\\', '////', '\\\\\\\\']
@@ -76,6 +76,24 @@ def znes_colors_hatched(n, diff_colors=4):
     return return_list
 
 
+def znes_colors_hatched(n, diff_colors=4):
+    """Return list of dicts with ZNES colors with hatches."""
+    colors = list(znes_colors().values())
+    hatches = ['//', '\\\\', '////', '\\\\\\\\']
+
+    return_list = list()
+
+    for i in range(n):
+        if i < diff_colors:
+            return_list += [{'color': colors[i % diff_colors]}]
+        else:
+            return_list += [{'color': colors[i % diff_colors],
+                             'hatch': hatches[((math.floor(i/diff_colors) - 1)
+                                               % 4)]}]
+
+    return return_list
+
+
 def get_colors(nr_cols, **kwargs):
     """Get color parameters list of dictionaries."""
     color_params = list()
@@ -83,6 +101,7 @@ def get_colors(nr_cols, **kwargs):
         for color in kwargs['colors']:
             color_params += [{'color': color}]
     elif 'hatches' in kwargs:
+        mpl.rcParams['hatch.color'] = 'w'
         if 'diff_colors' in kwargs:
             color_params = znes_colors_hatched(
                 nr_cols, diff_colors=kwargs['diff_colors'])
