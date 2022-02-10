@@ -2,9 +2,11 @@
 
 import math
 import locale
+import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
+from PIL import ImageColor
 
 
 def init_params(german_labels=True, font_size=20, font_family='Carlito',
@@ -113,6 +115,51 @@ def get_colors(nr_cols, **kwargs):
             color_params += [{'color': color}]
 
     return color_params
+
+
+def get_linear_colormap(color_low, color_high, increments=255):
+    """Get Matplotlib Colormap from darkblue to orage.
+
+    Parameters
+    ----------
+    color_low : str
+        hex color for the low end of the colormap
+
+    color_high : str
+        hex color for the high end of the colormap
+
+    increments : int
+        Number of colors between low and high color
+
+    Returns
+    -------
+    linear_colormap : matplotlib.colors.ListedColormap
+        Linear colormap between low and high color
+    """
+    color_low_rgba = ImageColor.getcolor(color_low, 'RGBA')
+    color_high_rgba = ImageColor.getcolor(color_high, 'RGBA')
+
+    color_low_rgba = [val/255 for val in color_low_rgba]
+    color_high_rgba = [val/255 for val in color_high_rgba]
+
+    linear_colormap = list()
+    colors_list = list()
+    for i in range(len(color_low_rgba)):
+        colors_list.append(
+            np.linspace(color_low_rgba[i], color_high_rgba[i], increments)
+            )
+
+    print(colors_list)
+
+    for i in range(len(colors_list[0])):
+        linear_colormap.append([
+            colors_list[0][i], colors_list[1][i],
+            colors_list[2][i], colors_list[3][i]
+            ])
+
+    linear_colormap = mpl.colors.ListedColormap(linear_colormap)
+
+    return linear_colormap
 
 
 def create_multipage_pdf(file_name='plots.pdf', figs=None, dpi=300,
