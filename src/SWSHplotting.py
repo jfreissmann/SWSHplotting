@@ -7,6 +7,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 from PIL import ImageColor
+from skimage import color
 
 
 def init_params(german_labels=True, font_size=20, font_family='Carlito',
@@ -100,8 +101,8 @@ def get_colors(nr_cols, **kwargs):
     """Get color parameters list of dictionaries."""
     color_params = list()
     if 'colors' in kwargs:
-        for color in kwargs['colors']:
-            color_params += [{'color': color}]
+        for color_n in kwargs['colors']:
+            color_params += [{'color': color_n}]
     elif 'hatches' in kwargs:
         mpl.rcParams['hatch.color'] = 'w'
         if 'diff_colors' in kwargs:
@@ -111,8 +112,8 @@ def get_colors(nr_cols, **kwargs):
             color_params = znes_colors_hatched(nr_cols)
     else:
         colors = list(znes_colors(nr_cols).values())
-        for color in colors:
-            color_params += [{'color': color}]
+        for color_n in colors:
+            color_params += [{'color': color_n}]
 
     return color_params
 
@@ -160,6 +161,67 @@ def get_linear_colormap(color_low, color_high, increments=255):
     linear_colormap = mpl.colors.ListedColormap(linear_colormap)
 
     return linear_colormap
+
+
+def get_perceptually_uniform_colormap(colors, increments=255):
+    """Get Matplotlib Colormap from darkblue to orage.
+
+    Parameters
+    ----------
+    colors : list
+        list of hex colors in desired order of colormap
+
+    increments : int
+        Number of colors between each color in colors
+
+    Returns
+    -------
+    colormap : matplotlib.colors.ListedColormap
+        Perceptually uniform colormap linearly through each color of colors
+    """
+    colors_lab = [hex2lab(c) for c in colors]
+
+    colormap_lab = list()
+    for n in range(1, len(colors_lab)):
+        lin_colors = {'L': [], 'a': [], 'b': []}
+        for i, key in enumerate(lin_colors):
+            lin_colors.update({
+                key: np.linspace(
+                    colors_lab[n-1][0, 0, i], colors_lab[n][0, 0, i],
+                    increments
+                    ).tolist()
+                })
+        for L, a, b in zip(lin_colors['L'], lin_colors['a'], lin_colors['b']):
+            colormap_lab.append(
+                np.array([[[L]], [[a]], [[b]]]).reshape(1, 1, 3)
+                )
+
+    colormap_rgb_np = [color.lab2rgb(c_lab) for c_lab in colormap_lab]
+
+    colormap_rgb = list()
+    for color_rgb in colormap_rgb_np:
+        colormap_rgb.append(
+            [color_rgb[0, 0, 0], color_rgb[0, 0, 1], color_rgb[0, 0, 2]]
+            )
+
+    colormap = mpl.colors.ListedColormap(colormap_rgb)
+
+    return colormap
+
+
+def hex2lab(hex_color):
+    """Get CIELab representation from HEX color.
+
+    Return corresponding values of lightness L, red-green spectrum a and
+    blue-yellow spectrum b from hex color string.
+    """
+    rgb_color = ImageColor.getcolor(hex_color, 'RGB')
+    rgb_color = np.array(
+        [[[val/255]] for val in rgb_color]
+        ).reshape(1, 1, 3)
+    lab_color = color.rgb2lab(rgb_color)
+
+    return lab_color
 
 
 def create_multipage_pdf(file_name='plots.pdf', figs=None, dpi=300,
@@ -277,8 +339,8 @@ def monthlyBar(data, figsize=[12, 5.5], legend_loc='best', legend=True,
         return fig, ax
 
 
-def load_curve(data, figsize=[8, 5], linewidth=2.5, legend_loc='best', return_objs=False,
-               **kwargs):
+def load_curve(data, figsize=[8, 5], linewidth=2.5, legend_loc='best',
+               return_objs=False, **kwargs):
     """Plot the sorted (annual) load curves of units."""
     data = data.apply(lambda x: x.sort_values(ascending=False).values)
     data.reset_index(drop=True, inplace=True)
