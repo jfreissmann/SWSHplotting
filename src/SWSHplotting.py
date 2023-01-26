@@ -219,9 +219,10 @@ def get_default_znes_cmap():
     """
     colors = znes_colors()
     return get_perceptually_uniform_colormap([
-        colors['lightblue'], colors['lightgrey'], colors['orange'],
-        colors['darkblue'], colors['red']
+        colors['darkblue'], colors['lightblue'], colors['lightgrey'],
+        colors['orange'], colors['red']
         ])
+
 
 def hex2lab(hex_color):
     """Get CIELab representation from HEX color.
