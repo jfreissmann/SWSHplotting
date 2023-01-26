@@ -12,7 +12,7 @@ from skimage import color
 
 def init_params(german_labels=True, font_size=20, font_family='Carlito',
                 pdf_padding=0.1, pdf_bbox='tight', pdf_fonttype=42,
-                deact_warnings=True):
+                axisbelow=True, deact_warnings=True):
     """Initialize RC parameters for matplotlib plots."""
     if german_labels:
         locale.setlocale(locale.LC_TIME, 'de_DE.UTF-8')
@@ -22,6 +22,7 @@ def init_params(german_labels=True, font_size=20, font_family='Carlito',
     mpl.rcParams['savefig.bbox'] = pdf_bbox
     plt.rcParams['pdf.fonttype'] = pdf_fonttype
     mpl.rcParams['hatch.linewidth'] = 2
+    mpl.rcParams['axes.axisbelow'] = axisbelow
 
     if deact_warnings:
         mpl.rcParams.update({'figure.max_open_warning': 0})
