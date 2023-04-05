@@ -165,7 +165,8 @@ def get_linear_colormap(color_low, color_high, increments=255):
 
 
 def get_perceptually_uniform_colormap(colors, increments=255):
-    """Get Matplotlib Colormap from darkblue to orage.
+    """
+    Get perceptually uniform Matplotlib Colormap.
 
     Parameters
     ----------
@@ -208,6 +209,19 @@ def get_perceptually_uniform_colormap(colors, increments=255):
     colormap = mpl.colors.ListedColormap(colormap_rgb)
 
     return colormap
+
+
+def get_default_znes_cmap():
+    """
+    Get a perceptually uniform colormap with default ZNES colors.
+
+    Order: darkblue -> lightblue -> lightgrey -> orange -> red (ZNES colors)
+    """
+    colors = znes_colors()
+    return get_perceptually_uniform_colormap([
+        colors['darkblue'], colors['lightblue'], colors['lightgrey'],
+        colors['orange'], colors['red']
+        ])
 
 
 def hex2lab(hex_color):
