@@ -1,0 +1,27 @@
+[project]
+name = "SWSHplotting"
+version = "0.0.1"
+description = "Plotting package for SWSH project."
+readme = { file = "README.rst", content-type = "text/x-rst" }
+authors = [
+    { name = "Jonas Freißmann", email = "jonas.freissmann@hs-flensburg.de" }
+]
+license = { text = "MIT" }
+requires-python = ">=3.9"
+dependencies = [
+    "matplotlib>=3.1.0",
+    "numpy",
+    "scikit-image"
+]
+classifiers = [
+    "License :: OSI Approved :: MIT License"
+]
+urls = { "Homepage" = "https://github.com/jfreissmann/SWSHplotting" }
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+py-modules = ["SWSHplotting"]
+package-dir = { "" = "src" }
