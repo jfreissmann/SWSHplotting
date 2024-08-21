@@ -1,13 +1,14 @@
 """Main plotting module."""
 
-import math
 import locale
-import numpy as np
+import math
+
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import numpy as np
 from matplotlib.backends.backend_pdf import PdfPages
 from PIL import ImageColor
-from skimage import color
+from skimage.color import lab2rgb, rgb2lab
 
 
 def init_params(german_labels=True, font_size=20, font_family='Carlito',
@@ -198,7 +199,7 @@ def get_perceptually_uniform_colormap(colors, increments=255):
                 np.array([[[L]], [[a]], [[b]]]).reshape(1, 1, 3)
                 )
 
-    colormap_rgb_np = [color.lab2rgb(c_lab) for c_lab in colormap_lab]
+    colormap_rgb_np = [lab2rgb(c_lab) for c_lab in colormap_lab]
 
     colormap_rgb = list()
     for color_rgb in colormap_rgb_np:
@@ -234,7 +235,7 @@ def hex2lab(hex_color):
     rgb_color = np.array(
         [[[val/255]] for val in rgb_color]
         ).reshape(1, 1, 3)
-    lab_color = color.rgb2lab(rgb_color)
+    lab_color = rgb2lab(rgb_color)
 
     return lab_color
 
