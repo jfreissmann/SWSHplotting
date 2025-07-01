@@ -312,7 +312,7 @@ def monthlyBar(data, figsize=[12, 5.5], legend_loc='best', legend=True,
             neg_bottom += monSum[col]
 
     if 'demand' in kwargs:
-        monDemand = kwargs['demand'].resample('M').sum()/1e3
+        monDemand = kwargs['demand'].resample('ME').sum()/1e3
         monDemand.rename(index=lambda x: x.strftime('%b'), inplace=True)
         ax.bar(monSum.index, monDemand,
                width=0.25, color=znes_colors()['lightgrey'], alpha=0.75,
