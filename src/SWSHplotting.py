@@ -285,7 +285,7 @@ def create_multipage_pdf(file_name='plots.pdf', figs=None, dpi=300,
 def monthlyBar(data, figsize=[12, 5.5], legend_loc='best', legend=True,
                return_objs=False, **kwargs):
     """Create bar chart of sum of monthly unit commitment."""
-    monSum = data.resample('M').sum()/1e3
+    monSum = data.resample('ME').sum()/1e3
     monSum.rename(index=lambda x: x.strftime('%b'), inplace=True)
 
     nr_cols = len(monSum.columns)
